@@ -1,0 +1,1693 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AirH²O - Reutilização Inteligente de Água</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #2ecc71;
+            --primary-dark: #27ae60;
+            --secondary: #3498db;
+            --secondary-dark: #2980b9;
+            --bg-dark: #0f1419;
+            --bg-light: #1a2332;
+            --text-light: #ecf0f1;
+            --text-secondary: #bdc3c7;
+            --accent: #1abc9c;
+            --danger: #e74c3c;
+            --warning: #f39c12;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(var(--bg-dark), var(--bg-light));
+            color: var(--text-light);
+            min-height: 100%;
+        }
+
+        /* LAYOUT GERAL */
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        /* CABEÇALHO */
+        header {
+            background: linear-gradient(var(--primary-dark), var(--accent));
+            padding: 20px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(46, 204, 113, 0.3);
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: white;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 25px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: var(--bg-dark);
+        }
+
+        .btn-primary:hover {
+            background: #27ae60;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(46, 204, 113, 0.4);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: white;
+            color: var(--primary-dark);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+            transform: translateY(-2px);
+        }
+
+        .btn-large {
+            font-size: 16px;
+            padding: 15px 30px;
+        }
+
+        .btn-flex {
+            flex: 1;
+            padding: 8px;
+        }
+
+        .btn-disabled-look {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* CONTEÚDO PRINCIPAL */
+        main {
+            margin-top: 80px;
+            min-height: 800px;
+        }
+
+        #dashboardContent {
+            padding-top: 160px;
+        }
+
+        /* MODAIS */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 2000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.6);
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .modal-content {
+            background: var(--bg-light);
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 15px;
+            width: 90%;
+            max-width: 450px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+            animation: slideUp 0.3s ease;
+        }
+
+        @keyframes slideUp {
+            from { transform: translateY(50px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid var(--primary);
+        }
+
+        .modal-header h2 {
+            color: var(--primary);
+            font-size: 24px;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: var(--text-secondary);
+            transition: color 0.3s ease;
+        }
+
+        .close-btn:hover {
+            color: var(--danger);
+        }
+
+        /* FORMULÁRIOS */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-light);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid var(--bg-dark);
+            border-radius: 8px;
+            background: var(--bg-dark);
+            color: var(--text-light);
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 10px rgba(46, 204, 113, 0.3);
+        }
+
+        .form-text {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 5px;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+        }
+
+        .form-actions .btn {
+            flex: 1;
+        }
+
+        .inline-checkbox {
+            width: auto;
+            margin-right: 8px;
+        }
+
+        .tabs-container {
+            display: none;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .tabs-container.active {
+            display: block;
+        }
+
+        /* ABAS */
+        .tabs-nav {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+            position: fixed;
+            top: 80px;
+            left: 0;
+            right: 0;
+            background: var(--bg-dark);
+            padding: 15px 20px;
+            z-index: 999;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            justify-content: center;
+        }
+
+        .tab-btn {
+            padding: 12px 24px;
+            background: var(--bg-light);
+            border: 2px solid transparent;
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 14px;
+        }
+
+        .tab-btn:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .tab-btn.active {
+            background: var(--primary);
+            color: var(--bg-dark);
+            border-color: var(--primary);
+        }
+
+        /* CARTÕES */
+        .card {
+            background: linear-gradient(var(--bg-light), rgba(52, 152, 219, 0.1));
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            border: 1px solid rgba(46, 204, 113, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(46, 204, 113, 0.2);
+            border-color: rgba(46, 204, 113, 0.5);
+        }
+
+        .card-title {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 15px;
+            color: var(--primary);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-title i {
+            font-size: 22px;
+        }
+
+        /* CORES REUTILIZÁVEIS */
+        .icon-primary, .title-primary { color: var(--primary); }
+        .icon-secondary, .title-secondary { color: var(--secondary); }
+        .icon-accent, .title-accent { color: var(--accent); }
+
+        /* HERO */
+        .hero-section {
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.15) 0%, rgba(52, 152, 219, 0.15) 100%);
+            border-radius: 15px;
+            padding: 60px 30px;
+            text-align: center;
+            margin: 40px 0;
+            border: 2px solid rgba(46, 204, 113, 0.3);
+        }
+
+        .hero-title {
+            font-size: 48px;
+            color: var(--primary);
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        .hero-icon {
+            margin-right: 15px;
+        }
+
+        .hero-subtitle {
+            font-size: 20px;
+            color: var(--text-light);
+            margin-bottom: 15px;
+            font-weight: 300;
+        }
+
+        .hero-description {
+            font-size: 16px;
+            color: var(--text-secondary);
+            margin-bottom: 30px;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+            line-height: 1.6;
+        }
+
+        /* FEATURES */
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin: 50px 0;
+        }
+
+        .feature-card {
+            text-align: center;
+        }
+
+        .feature-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+        }
+
+        .feature-title {
+            margin-bottom: 10px;
+            font-size: 18px;
+        }
+
+        .feature-text {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* COMO FUNCIONA */
+        .how-section {
+            margin: 50px 0;
+        }
+
+        .how-title {
+            color: var(--primary);
+            text-align: center;
+            margin-bottom: 40px;
+            font-size: 28px;
+        }
+
+        .steps-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 30px;
+        }
+
+        .step {
+            text-align: center;
+        }
+
+        .step-circle {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 20px;
+            font-size: 24px;
+            color: white;
+            font-weight: bold;
+        }
+
+        .step-primary { background: var(--primary); }
+        .step-secondary { background: var(--secondary); }
+        .step-accent { background: var(--accent); }
+
+        .step-title {
+            color: var(--text-light);
+            margin-bottom: 10px;
+        }
+
+        .step-text {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* ESTATÍSTICAS */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 50px 0;
+        }
+
+        .stat-box {
+            border-radius: 12px;
+            padding: 25px;
+            text-align: center;
+        }
+
+        .stat-primary {
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.2) 0%, rgba(52, 152, 219, 0.2) 100%);
+            border: 2px solid var(--primary);
+        }
+
+        .stat-secondary {
+            background: linear-gradient(135deg, rgba(52, 152, 219, 0.2) 0%, rgba(26, 188, 156, 0.2) 100%);
+            border: 2px solid var(--secondary);
+        }
+
+        .stat-accent {
+            background: linear-gradient(135deg, rgba(26, 188, 156, 0.2) 0%, rgba(46, 204, 113, 0.2) 100%);
+            border: 2px solid var(--accent);
+        }
+
+        .stat-value {
+            font-size: 36px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+        }
+
+        /* CTA */
+        .cta-section {
+            background: linear-gradient(135deg, var(--primary-dark) 0%, var(--accent) 100%);
+            border-radius: 15px;
+            padding: 50px 30px;
+            text-align: center;
+            margin: 50px 0;
+        }
+
+        .cta-title {
+            color: white;
+            margin-bottom: 20px;
+            font-size: 32px;
+        }
+
+        .cta-text {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 16px;
+            margin-bottom: 30px;
+        }
+
+        .cta-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        /* RODAPÉ */
+        .site-footer {
+            text-align: center;
+            padding: 40px 20px;
+            border-top: 1px solid rgba(46, 204, 113, 0.2);
+            margin-top: 50px;
+            color: var(--text-secondary);
+        }
+
+        .footer-line {
+            margin-bottom: 10px;
+        }
+
+        .footer-sub {
+            font-size: 12px;
+        }
+
+        .footer-heart {
+            color: var(--primary);
+        }
+
+        /* PAINEL */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .metric-box {
+            background: linear-gradient(rgba(46, 204, 113, 0.1), rgba(52, 152, 219, 0.1));
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .metric-box:hover {
+            transform: scale(1.05);
+            box-shadow: 0 8px 24px rgba(46, 204, 113, 0.3);
+        }
+
+        .metric-label {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .metric-value {
+            font-size: 48px;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .metric-unit {
+            font-size: 14px;
+            color: var(--text-secondary);
+        }
+
+        /* MEDIDOR DE ÁGUA */
+        .water-tank {
+            background: var(--bg-light);
+            border: 3px solid var(--primary);
+            border-radius: 12px;
+            height: 300px;
+            position: relative;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .water-fill {
+            background: linear-gradient(var(--secondary), var(--accent));
+            height: 0%;
+            width: 100%;
+            position: absolute;
+            bottom: 0;
+            transition: height 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: white;
+        }
+
+        .water-tank-label {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            font-weight: 600;
+            color: var(--primary);
+            z-index: 10;
+        }
+
+        /* SENSORES */
+        .sensors-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+        }
+
+        .sensor-box {
+            background: var(--bg-dark);
+            padding: 15px;
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .sensor-secondary { border-left-color: var(--secondary); }
+        .sensor-accent { border-left-color: var(--accent); }
+
+        .sensor-label {
+            color: var(--text-secondary);
+            font-size: 12px;
+            margin-bottom: 5px;
+        }
+
+        .sensor-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        /* LOG DE EVENTOS */
+        .event-log {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .log-entry {
+            padding: 12px;
+            border-bottom: 1px solid rgba(46, 204, 113, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .log-title {
+            font-weight: 600;
+        }
+
+        .log-desc, .log-time {
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        /* CONTROLES */
+        .controls-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .control-card {
+            background: var(--bg-light);
+            border: 2px solid var(--primary);
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .control-card.inactive {
+            border-color: var(--text-secondary);
+            opacity: 0.7;
+        }
+
+        .control-title {
+            justify-content: center;
+            margin-bottom: 15px;
+        }
+
+        .control-status {
+            color: var(--text-secondary);
+            margin-top: 10px;
+        }
+
+        .control-btn {
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .toggle-switch {
+            width: 60px;
+            height: 34px;
+            position: relative;
+            margin: 20px auto;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--text-secondary);
+            transition: 0.4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        /* DISPOSITIVOS */
+        .devices-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .device-box {
+            background: var(--bg-dark);
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid var(--primary);
+        }
+
+        .device-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 15px;
+        }
+
+        .device-name {
+            color: var(--primary);
+            font-weight: 700;
+            font-size: 16px;
+        }
+
+        .device-id {
+            color: var(--text-secondary);
+            font-size: 12px;
+        }
+
+        .device-info {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-bottom: 8px;
+        }
+
+        .device-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        /* STATUS */
+        .status-badge {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-active {
+            background: rgba(46, 204, 113, 0.2);
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .status-inactive {
+            background: rgba(189, 195, 199, 0.2);
+            color: var(--text-secondary);
+            border: 1px solid var(--text-secondary);
+        }
+
+        .status-warning {
+            background: rgba(243, 156, 18, 0.2);
+            color: var(--warning);
+            border: 1px solid var(--warning);
+        }
+
+        /* GRÁFICO */
+        .chart-container {
+            background: var(--bg-light);
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            border: 1px solid rgba(46, 204, 113, 0.2);
+        }
+
+        .chart-placeholder {
+            height: 300px;
+            background: linear-gradient(135deg, rgba(46, 204, 113, 0.1) 0%, rgba(52, 152, 219, 0.1) 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            font-style: italic;
+        }
+
+        /* MENSAGENS */
+        .success-message {
+            background: rgba(46, 204, 113, 0.2);
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        .error-message {
+            background: rgba(231, 76, 60, 0.2);
+            border: 2px solid var(--danger);
+            color: var(--danger);
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+        }
+
+        /* RESPONSIVO */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .auth-buttons {
+                width: 100%;
+                justify-content: center;
+            }
+
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .modal-content {
+                width: 95%;
+                margin: 20% auto;
+            }
+
+            .tabs-nav {
+                justify-content: center;
+            }
+
+            .tab-btn {
+                font-size: 12px;
+                padding: 10px 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- HEADER -->
+    <header>
+        <div class="header-content">
+            <div class="logo">
+                <i class="fas fa-droplet"></i>
+                AirH²O
+            </div>
+            <div class="auth-buttons">
+                <button class="btn btn-secondary" onclick="openModal('loginModal')">Login</button>
+                <button class="btn btn-primary" onclick="openModal('registerModal')">Cadastro</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MODAIS -->
+    <!-- MODAL LOGIN -->
+    <div id="loginModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Login</h2>
+                <button class="close-btn" onclick="closeModal('loginModal')">&times;</button>
+            </div>
+            <form onsubmit="handleLogin(event)">
+                <div class="form-group">
+                    <label for="loginEmail">Email</label>
+                    <input type="email" id="loginEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="loginPassword">Senha</label>
+                    <input type="password" id="loginPassword" required>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" class="inline-checkbox">
+                        Manter-me conectado
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('loginModal')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Entrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL CADASTRO -->
+    <div id="registerModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Criar Conta</h2>
+                <button class="close-btn" onclick="closeModal('registerModal')">&times;</button>
+            </div>
+            <form onsubmit="handleRegister(event)">
+                <div class="form-group">
+                    <label for="registerName">Nome Completo</label>
+                    <input type="text" id="registerName" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerEmail">Email</label>
+                    <input type="email" id="registerEmail" required>
+                </div>
+                <div class="form-group">
+                    <label for="registerPhone">Telefone</label>
+                    <input type="tel" id="registerPhone">
+                </div>
+                <div class="form-group">
+                    <label for="registerPassword">Senha</label>
+                    <input type="password" id="registerPassword" required>
+                    <p class="form-text">Mínimo 8 caracteres, com letras e números</p>
+                </div>
+                <div class="form-group">
+                    <label for="registerConfirmPassword">Confirmar Senha</label>
+                    <input type="password" id="registerConfirmPassword" required>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" class="inline-checkbox" required>
+                        Aceito os termos e condições
+                    </label>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('registerModal')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Cadastrar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <main class="container">
+        <!-- CONTEÚDO ANTES DO LOGIN -->
+        <div id="publicContent">
+            <!-- HERO SECTION -->
+            <section class="hero-section">
+                <h1 class="hero-title">
+                    <i class="fas fa-droplet hero-icon"></i>AirH²O
+                </h1>
+                <p class="hero-subtitle">
+                    Reutilização Inteligente de Água
+                </p>
+                <p class="hero-description">
+                    Transforme os ar-condicionados da sua casa em uma fonte sustentável de água. Colete, monitore e controle de forma inteligente a água desperdiçada, reutilizando-a em suas plantas e jardinagem.
+                </p>
+            </section>
+
+            <!-- FEATURES -->
+            <div class="features-grid">
+                <div class="card feature-card">
+                    <div class="feature-icon icon-primary"><i class="fas fa-water"></i></div>
+                    <h3 class="feature-title title-primary">Coleta Automática</h3>
+                    <p class="feature-text">Monitore em tempo real a água coletada dos ar-condicionados com sensores inteligentes.</p>
+                </div>
+
+                <div class="card feature-card">
+                    <div class="feature-icon icon-secondary"><i class="fas fa-chart-line"></i></div>
+                    <h3 class="feature-title title-secondary">Controle Inteligente</h3>
+                    <p class="feature-text">Controle remotamente bombas, válvulas e automações pela web ou mobile app.</p>
+                </div>
+
+                <div class="card feature-card">
+                    <div class="feature-icon icon-accent"><i class="fas fa-leaf"></i></div>
+                    <h3 class="feature-title title-accent">Sustentabilidade</h3>
+                    <p class="feature-text">Reduza desperdício de água e economize mantendo suas plantas sempre hidratadas.</p>
+                </div>
+
+                <div class="card feature-card">
+                    <div class="feature-icon icon-primary"><i class="fas fa-mobile-alt"></i></div>
+                    <h3 class="feature-title title-primary">Acesso em Qualquer Lugar</h3>
+                    <p class="feature-text">Dashboard web responsivo e aplicativo mobile para acompanhar seus dados.</p>
+                </div>
+
+                <div class="card feature-card">
+                    <div class="feature-icon icon-secondary"><i class="fas fa-microchip"></i></div>
+                    <h3 class="feature-title title-secondary">Tecnologia Arduino</h3>
+                    <p class="feature-text">Baseado em ESP32 com sensores de temperatura, umidade e nível de água.</p>
+                </div>
+
+                <div class="card feature-card">
+                    <div class="feature-icon icon-accent"><i class="fas fa-solar-panel"></i></div>
+                    <h3 class="feature-title title-accent">Energia Limpa</h3>
+                    <p class="feature-text">Suporte para painéis solares para alimentar o sistema de forma sustentável.</p>
+                </div>
+            </div>
+
+            <!-- COMO FUNCIONA -->
+            <div class="card how-section">
+                <h2 class="how-title">
+                    <i class="fas fa-cog"></i> Como Funciona
+                </h2>
+                <div class="steps-grid">
+                    <div class="step">
+                        <div class="step-circle step-primary">1</div>
+                        <h4 class="step-title">Instalação</h4>
+                        <p class="step-text">Instale o sistema na saída de água do seu ar-condicionado</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-circle step-secondary">2</div>
+                        <h4 class="step-title">Coleta</h4>
+                        <p class="step-text">A água é automaticamente coletada e armazenada em uma cisterna</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-circle step-accent">3</div>
+                        <h4 class="step-title">Monitoramento</h4>
+                        <p class="step-text">Acompanhe o nível, temperatura e umidade em tempo real</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-circle step-primary">4</div>
+                        <h4 class="step-title">Controle</h4>
+                        <p class="step-text">Controle bombas e válvulas manualmente ou com automação</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-circle step-secondary">5</div>
+                        <h4 class="step-title">Irrigação</h4>
+                        <p class="step-text">Reutilize a água em plantas, jardim ou atividades diversas</p>
+                    </div>
+                    <div class="step">
+                        <div class="step-circle step-accent">6</div>
+                        <h4 class="step-title">Economize</h4>
+                        <p class="step-text">Reduza sua conta de água e ajude o planeta</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ESTATÍSTICAS -->
+            <div class="stats-grid">
+                <div class="stat-box stat-primary">
+                    <p class="stat-value title-primary">100L+</p>
+                    <p class="stat-label">Água coletada por mês</p>
+                </div>
+                <div class="stat-box stat-secondary">
+                    <p class="stat-value title-secondary">24/7</p>
+                    <p class="stat-label">Monitoramento contínuo</p>
+                </div>
+                <div class="stat-box stat-accent">
+                    <p class="stat-value title-accent">0% CO₂</p>
+                    <p class="stat-label">Controle automático</p>
+                </div>
+            </div>
+
+            <!-- CTA - CHAMADA PARA AÇÃO -->
+            <div class="cta-section">
+                <h2 class="cta-title">Comece Agora</h2>
+                <p class="cta-text">
+                    Junte-se à comunidade AirH²O e comece a reutilizar água de forma inteligente
+                </p>
+                <div class="cta-buttons">
+                    <button class="btn btn-primary btn-large" onclick="openModal('registerModal')">
+                        <i class="fas fa-user-plus"></i> Criar Conta
+                    </button>
+                    <button class="btn btn-secondary btn-large" onclick="openModal('loginModal')">
+                        <i class="fas fa-sign-in-alt"></i> Fazer Login
+                    </button>
+                </div>
+            </div>
+
+            <!-- FOOTER -->
+            <footer class="site-footer">
+                <p class="footer-line">AirH²O © 2026 - Reutilização Inteligente de Água</p>
+                <p class="footer-sub">Desenvolvido com <i class="fas fa-heart footer-heart"></i> para o planeta</p>
+            </footer>
+        </div>
+
+        <!-- CONTEÚDO APÓS LOGIN -->
+        <div id="dashboardContent" style="display: none;">
+            <!-- MENSAGENS -->
+            <div id="successMessage" class="success-message">
+                <i class="fas fa-check-circle"></i> Operação realizada com sucesso!
+            </div>
+            <div id="errorMessage" class="error-message">
+                <i class="fas fa-exclamation-circle"></i> Ocorreu um erro. Tente novamente.
+            </div>
+
+            <!-- ABAS PRINCIPAIS -->
+            <div class="tabs-nav">
+                <button class="tab-btn active" onclick="switchTab('dashboard')">
+                    <i class="fas fa-gauge"></i> Dashboard
+                </button>
+                <button class="tab-btn" onclick="switchTab('monitoramento')">
+                    <i class="fas fa-chart-line"></i> Monitoramento
+                </button>
+                <button class="tab-btn" onclick="switchTab('controles')">
+                    <i class="fas fa-sliders-h"></i> Controles
+                </button>
+                <button class="tab-btn" onclick="switchTab('dispositivos')">
+                    <i class="fas fa-microchip"></i> Dispositivos
+                </button>
+                <button class="tab-btn" onclick="switchTab('perfil')">
+                    <i class="fas fa-user"></i> Perfil
+                </button>
+                <button class="tab-btn" onclick="sair()">
+                    <i class="fas fa-sign-out-alt"></i> Sair
+                </button>
+            </div>
+
+            <!-- ABA 1: DASHBOARD -->
+            <div id="dashboard" class="tabs-container active">
+                <div class="dashboard-grid">
+                    <div class="metric-box">
+                        <div class="metric-label">Nível de Água</div>
+                        <div class="metric-value" id="waterLevel">65</div>
+                        <div class="metric-unit">%</div>
+                        <span class="status-badge status-active">Ativo</span>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Água Coletada Hoje</div>
+                        <div class="metric-value" id="waterToday">12.5</div>
+                        <div class="metric-unit">Litros</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Umidade do Solo</div>
+                        <div class="metric-value" id="soilMoisture">42</div>
+                        <div class="metric-unit">%</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Temperatura</div>
+                        <div class="metric-value" id="temperature">28</div>
+                        <div class="metric-unit">°C</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fas fa-water"></i> Tanque de Cisterna
+                    </div>
+                    <div class="water-tank">
+                        <div class="water-tank-label">Cisterna</div>
+                        <div class="water-fill" id="waterFill" style="height: 65%;">
+                            <span id="waterPercentage">65%</span>
+                        </div>
+                    </div>
+                    <p style="text-align: center; color: var(--text-secondary); margin-top: 10px;">
+                        Capacidade: <strong style="color: var(--primary);">10 L / 50 L</strong>
+                    </p>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fas fa-chart-line"></i> Histórico de Coleta (Últimos 7 dias)
+                    </div>
+                    <div class="chart-container">
+                        <div class="chart-placeholder">
+                            Gráfico interativo será exibido aqui (integrar com Chart.js ou similar)
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ABA 2: MONITORAMENTO -->
+            <div id="monitoramento" class="tabs-container">
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fas fa-thermometer-half"></i> Sensores
+                    </div>
+                    <div class="sensors-grid">
+                        <div class="sensor-box">
+                            <p class="sensor-label">SENSOR DE CHUVA</p>
+                            <p class="sensor-value title-primary">Inativo</p>
+                            <span class="status-badge status-inactive">Sem Chuva</span>
+                        </div>
+                        <div class="sensor-box sensor-secondary">
+                            <p class="sensor-label">SENSOR DE UMIDADE</p>
+                            <p class="sensor-value title-secondary">42%</p>
+                            <span class="status-badge status-active">Monitorando</span>
+                        </div>
+                        <div class="sensor-box sensor-accent">
+                            <p class="sensor-label">TEMPERATURA</p>
+                            <p class="sensor-value title-accent">28°C</p>
+                            <span class="status-badge status-warning">Moderado</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fas fa-history"></i> Log de Eventos
+                    </div>
+                    <div class="event-log">
+                        <div class="log-entry">
+                            <div>
+                                <p class="log-title title-primary">Cisterna cheia</p>
+                                <p class="log-desc">O tanque atingiu 100% de capacidade</p>
+                            </div>
+                            <p class="log-time">Hoje às 14:32</p>
+                        </div>
+                        <div class="log-entry">
+                            <div>
+                                <p class="log-title title-accent">Água liberada</p>
+                                <p class="log-desc">Válvula de extravasora ativada automaticamente</p>
+                            </div>
+                            <p class="log-time">Hoje às 14:15</p>
+                        </div>
+                        <div class="log-entry">
+                            <div>
+                                <p class="log-title title-secondary">Bomba acionada</p>
+                                <p class="log-desc">Sistema de irrigação iniciado por comando manual</p>
+                            </div>
+                            <p class="log-time">Ontem às 09:45</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ABA 3: CONTROLES -->
+            <div id="controles" class="tabs-container">
+                <div class="controls-grid">
+                    <div class="control-card">
+                        <div class="card-title control-title">
+                            <i class="fas fa-pump-soap"></i> Bomba de Irrigação
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="pumpToggle" onchange="toggleControl('pump')">
+                            <span class="slider"></span>
+                        </label>
+                        <p id="pumpStatus" class="control-status">Desativada</p>
+                        <button class="btn btn-primary control-btn" onclick="agendarBomba()">
+                            <i class="fas fa-clock"></i> Agendar
+                        </button>
+                    </div>
+
+                    <div class="control-card">
+                        <div class="card-title control-title">
+                            <i class="fas fa-valve"></i> Válvula Solenoide
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="solenoidToggle" onchange="toggleControl('solenoid')">
+                            <span class="slider"></span>
+                        </label>
+                        <p id="solenoidStatus" class="control-status">Fechada</p>
+                        <button class="btn btn-danger control-btn btn-disabled-look">
+                            <i class="fas fa-ban"></i> Apenas Leitura
+                        </button>
+                    </div>
+
+                    <div class="control-card">
+                        <div class="card-title control-title">
+                            <i class="fas fa-droplet-slash"></i> Válvula de Extravasora
+                        </div>
+                        <label class="toggle-switch">
+                            <input type="checkbox" id="drainToggle" disabled>
+                            <span class="slider"></span>
+                        </label>
+                        <p id="drainStatus" class="control-status">Automática</p>
+                        <p style="font-size: 12px; color: var(--warning); margin-top: 15px;">
+                            <i class="fas fa-info-circle"></i> Controlada automaticamente
+                        </p>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fas fa-cogs"></i> Configurações de Automação
+                    </div>
+                    <form>
+                        <div class="form-group">
+                            <label for="autoIrrigation">
+                                <input type="checkbox" id="autoIrrigation" class="inline-checkbox">
+                                Ativar irrigação automática quando umidade cair abaixo de
+                            </label>
+                            <input type="number" id="autoIrrigationValue" min="0" max="100" value="30" style="width: 100px;">
+                            <span>%</span>
+                        </div>
+                        <div class="form-group">
+                            <label for="autoDrain">
+                                <input type="checkbox" id="autoDrain" class="inline-checkbox" checked>
+                                Ativar extravasora quando cisterna atingir
+                            </label>
+                            <input type="number" id="autoDrainValue" min="0" max="100" value="95" style="width: 100px;">
+                            <span>%</span>
+                        </div>
+                        <button type="button" class="btn btn-primary" style="margin-top: 15px;">
+                            <i class="fas fa-save"></i> Salvar Configurações
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- ABA 4: DISPOSITIVOS -->
+            <div id="dispositivos" class="tabs-container">
+                <button class="btn btn-primary" style="margin-bottom: 20px;" onclick="openModal('addDeviceModal')">
+                    <i class="fas fa-plus"></i> Adicionar Dispositivo
+                </button>
+
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fas fa-microchip"></i> Meus Dispositivos
+                    </div>
+                    <div class="devices-grid">
+                        <div class="device-box">
+                            <div class="device-header">
+                                <div>
+                                    <p class="device-name">Cisterna Principal</p>
+                                    <p class="device-id">ESP32 - ID: 001</p>
+                                </div>
+                                <span class="status-badge status-active">Online</span>
+                            </div>
+                            <p class="device-info">
+                                <i class="fas fa-map-marker-alt"></i> Localização: Garagem
+                            </p>
+                            <p class="device-info">
+                                <i class="fas fa-signal"></i> Sinal: 85% - Última sincronização: 2 min atrás
+                            </p>
+                            <div class="device-actions">
+                                <button class="btn btn-secondary btn-flex" onclick="openModal('editDeviceModal')">
+                                    <i class="fas fa-edit"></i> Editar
+                                </button>
+                                <button class="btn btn-danger btn-flex">
+                                    <i class="fas fa-trash"></i> Remover
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ABA 5: PERFIL -->
+            <div id="perfil" class="tabs-container">
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fas fa-user-circle"></i> Dados da Conta
+                    </div>
+                    <form>
+                        <div class="form-group">
+                            <label for="profileName">Nome Completo</label>
+                            <input type="text" id="profileName" value="Maria Silva">
+                        </div>
+                        <div class="form-group">
+                            <label for="profileEmail">Email</label>
+                            <input type="email" id="profileEmail" value="maria@example.com">
+                        </div>
+                        <div class="form-group">
+                            <label for="profilePhone">Telefone</label>
+                            <input type="tel" id="profilePhone" value="(11) 98765-4321">
+                        </div>
+                        <div class="form-group">
+                            <label for="profileAddress">Endereço</label>
+                            <input type="text" id="profileAddress" placeholder="Rua, número, complemento">
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="salvarPerfil()">
+                            <i class="fas fa-save"></i> Salvar Alterações
+                        </button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fas fa-lock"></i> Segurança
+                    </div>
+                    <form>
+                        <div class="form-group">
+                            <label for="currentPassword">Senha Atual</label>
+                            <input type="password" id="currentPassword">
+                        </div>
+                        <div class="form-group">
+                            <label for="newPassword">Nova Senha</label>
+                            <input type="password" id="newPassword">
+                        </div>
+                        <div class="form-group">
+                            <label for="confirmNewPassword">Confirmar Nova Senha</label>
+                            <input type="password" id="confirmNewPassword">
+                        </div>
+                        <button type="button" class="btn btn-primary" onclick="alterarSenha()">
+                            <i class="fas fa-key"></i> Alterar Senha
+                        </button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">
+                        <i class="fas fa-trash"></i> Zona de Perigo
+                    </div>
+                    <p style="color: var(--text-secondary); margin-bottom: 15px;">
+                        A exclusão da conta é permanente e não pode ser desfeita.
+                    </p>
+                    <button type="button" class="btn btn-danger" onclick="deletarConta()">
+                        <i class="fas fa-exclamation-triangle"></i> Deletar Conta
+                    </button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- MODAL ADICIONAR DISPOSITIVO -->
+    <div id="addDeviceModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Adicionar Dispositivo</h2>
+                <button class="close-btn" onclick="closeModal('addDeviceModal')">&times;</button>
+            </div>
+            <form onsubmit="handleAddDevice(event)">
+                <div class="form-group">
+                    <label for="deviceName">Nome do Dispositivo</label>
+                    <input type="text" id="deviceName" placeholder="Ex: Cisterna Principal" required>
+                </div>
+                <div class="form-group">
+                    <label for="deviceId">ID/MAC Address</label>
+                    <input type="text" id="deviceId" placeholder="Código do dispositivo" required>
+                </div>
+                <div class="form-group">
+                    <label for="deviceLocation">Localização</label>
+                    <input type="text" id="deviceLocation" placeholder="Ex: Garagem">
+                </div>
+                <div class="form-group">
+                    <label for="deviceType">Tipo de Dispositivo</label>
+                    <select id="deviceType" required>
+                        <option value="">Selecione um tipo</option>
+                        <option value="sensor">Sensor de Nível</option>
+                        <option value="pump">Bomba</option>
+                        <option value="valve">Válvula</option>
+                        <option value="weather">Sensor Climático</option>
+                    </select>
+                </div>
+                <div class="form-actions">
+                    <button type="button" class="btn btn-secondary" onclick="closeModal('addDeviceModal')">Cancelar</button>
+                    <button type="submit" class="btn btn-primary">Adicionar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // FUNÇÕES DE MODAL
+        function openModal(modalId) {
+            document.getElementById(modalId).style.display = 'block';
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).style.display = 'none';
+        }
+
+        // FECHAR MODAL AO CLICAR FORA
+        window.onclick = function(event) {
+            if (event.target.classList.contains('modal')) {
+                event.target.style.display = 'none';
+            }
+        }
+
+        // FUNÇÕES DE AUTENTICAÇÃO
+        function handleLogin(event) {
+            event.preventDefault();
+            const email = document.getElementById('loginEmail').value;
+            const password = document.getElementById('loginPassword').value;
+
+            // Aqui você faria a autenticação real com o backend
+            console.log('Entrar:', email, password);
+
+            mostrarSucesso('Entrada realizada com sucesso!');
+            closeModal('loginModal');
+            mostrarPainel();
+        }
+
+        function handleRegister(event) {
+            event.preventDefault();
+            const name = document.getElementById('registerName').value;
+            const email = document.getElementById('registerEmail').value;
+            const password = document.getElementById('registerPassword').value;
+            const confirmPassword = document.getElementById('registerConfirmPassword').value;
+
+            if (password !== confirmPassword) {
+                mostrarErro('As senhas não correspondem!');
+                return;
+            }
+
+            // Aqui você faria o registro real com o backend
+            console.log('Cadastro:', name, email, password);
+
+            mostrarSucesso('Conta criada com sucesso! Por favor, faça entrada.');
+            closeModal('registerModal');
+        }
+
+        function mostrarPainel() {
+            document.getElementById('publicContent').style.display = 'none';
+            document.getElementById('dashboardContent').style.display = 'block';
+        }
+
+        function sair() {
+            if (confirm('Tem certeza que deseja sair?')) {
+                document.getElementById('publicContent').style.display = 'block';
+                document.getElementById('dashboardContent').style.display = 'none';
+                mostrarSucesso('Desconectado com sucesso!');
+            }
+        }
+
+        // FUNÇÕES DE ABAS
+        function switchTab(tabName) {
+            // Esconder todas as abas
+            const containers = document.querySelectorAll('.tabs-container');
+            containers.forEach(container => {
+                container.classList.remove('active');
+            });
+
+            // Remover classe ativa de todos os botões
+            const buttons = document.querySelectorAll('.tab-btn');
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Mostrar aba selecionada
+            document.getElementById(tabName).classList.add('active');
+
+            // Adicionar classe ativa ao botão clicado
+            event.target.classList.add('active');
+        }
+
+        // FUNÇÕES DE CONTROLE
+        function toggleControl(control) {
+            const toggle = document.getElementById(control + 'Toggle');
+            const status = document.getElementById(control + 'Status');
+
+            if (control === 'pump') {
+                status.textContent = toggle.checked ? 'Ativada' : 'Desativada';
+                status.style.color = toggle.checked ? 'var(--primary)' : 'var(--text-secondary)';
+                console.log('Bomba:', toggle.checked ? 'ligada' : 'desligada');
+            } else if (control === 'solenoid') {
+                status.textContent = toggle.checked ? 'Aberta' : 'Fechada';
+                status.style.color = toggle.checked ? 'var(--primary)' : 'var(--text-secondary)';
+                console.log('Válvula Solenoide:', toggle.checked ? 'aberta' : 'fechada');
+            }
+        }
+
+        function agendarBomba() {
+            const minutes = prompt('Quantos minutos deseja agendar a bomba? (máximo 120)', '30');
+            if (minutes && minutes > 0 && minutes <= 120) {
+                mostrarSucesso(`Bomba agendada para ${minutes} minutos`);
+            }
+        }
+
+        // FUNÇÕES DE PERFIL
+        function salvarPerfil() {
+            const name = document.getElementById('profileName').value;
+            const email = document.getElementById('profileEmail').value;
+            const phone = document.getElementById('profilePhone').value;
+            const address = document.getElementById('profileAddress').value;
+
+            console.log('Perfil atualizado:', {name, email, phone, address});
+            mostrarSucesso('Perfil atualizado com sucesso!');
+        }
+
+        function alterarSenha() {
+            const current = document.getElementById('currentPassword').value;
+            const newPass = document.getElementById('newPassword').value;
+            const confirm = document.getElementById('confirmNewPassword').value;
+
+            if (!current || !newPass || !confirm) {
+                mostrarErro('Preencha todos os campos de senha!');
+                return;
+            }
+
+            if (newPass !== confirm) {
+                mostrarErro('As senhas não correspondem!');
+                return;
+            }
+
+            console.log('Senha alterada');
+            mostrarSucesso('Senha alterada com sucesso!');
+            document.getElementById('currentPassword').value = '';
+            document.getElementById('newPassword').value = '';
+            document.getElementById('confirmNewPassword').value = '';
+        }
+
+        function deletarConta() {
+            if (confirm('ATENÇÃO: Isso deletará sua conta permanentemente. Deseja continuar?')) {
+                if (confirm('Esta é a última confirmação. Sua conta será deletada.')) {
+                    mostrarSucesso('Conta deletada. Você será redirecionado em 3 segundos...');
+                    setTimeout(() => {
+                        sair();
+                    }, 3000);
+                }
+            }
+        }
+
+        // FUNÇÕES DE DISPOSITIVO
+        function handleAddDevice(event) {
+            event.preventDefault();
+            const name = document.getElementById('deviceName').value;
+            const id = document.getElementById('deviceId').value;
+            const location = document.getElementById('deviceLocation').value;
+            const type = document.getElementById('deviceType').value;
+
+            console.log('Dispositivo adicionado:', {name, id, location, type});
+            mostrarSucesso('Dispositivo adicionado com sucesso!');
+            closeModal('addDeviceModal');
+            event.target.reset();
+        }
+
+        // FUNÇÕES DE NOTIFICAÇÃO
+        function mostrarSucesso(message) {
+            const el = document.getElementById('successMessage');
+            el.textContent = '✓ ' + message;
+            el.style.display = 'block';
+            setTimeout(() => {
+                el.style.display = 'none';
+            }, 4000);
+        }
+
+        function mostrarErro(message) {
+            const el = document.getElementById('errorMessage');
+            el.textContent = '✕ ' + message;
+            el.style.display = 'block';
+            setTimeout(() => {
+                el.style.display = 'none';
+            }, 4000);
+        }
+
+        // SIMULAÇÃO DE DADOS EM TEMPO REAL
+        function atualizarDadosPainel() {
+            // Valores fixos
+            const waterLevel = 10;
+            const waterToday = 10;
+            const soilMoisture = 10;
+            const temperature = 10;
+
+            document.getElementById('waterLevel').textContent = waterLevel;
+            document.getElementById('waterFill').style.height = waterLevel + '%';
+            document.getElementById('waterPercentage').textContent = waterLevel + '%';
+            document.getElementById('waterToday').textContent = waterToday;
+            document.getElementById('soilMoisture').textContent = soilMoisture;
+            document.getElementById('temperature').textContent = temperature;
+        }
+
+        // Atualizar dados a cada 5 segundos (quando autenticado)
+        setInterval(atualizarDadosPainel, 5000);
+
+        // AJUSTE DE ALTURA DO CONTEÚDO PRINCIPAL (substitui 100vh por px)
+        function ajustarAlturaMain() {
+            document.querySelector('main').style.minHeight = (window.innerHeight - 80) + 'px';
+        }
+        window.addEventListener('load', ajustarAlturaMain);
+        window.addEventListener('resize', ajustarAlturaMain);
+    </script>
+</body>
+</html>
