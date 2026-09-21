@@ -1,0 +1,18 @@
+#COMANDOS EM PYTHON#
+
+#instala o ambiente virtual: python -m venv venv / venv\Scripts\activate#
+
+#pip install fastapi uvicorn sqlalchemy passlib[bcrypt] python-jose[crypt] python-dotenv python-multipart#
+
+#pip install bcrypt==4.0.1# tem que usar
+
+#pip install sqlalchemy-utils# parametros de utilidades do mysqlalchemy,ex:uma coluna tipo string so pode ter um numero limitado caracteres
+
+#pip install alembic# *para fazer migração do banco de dados com seguranaça,NÃO OBRIGATORIO* 
+
+#Para migrar utilizar o comando(alembic revision --autogenerate -m "qualquer coisa")
+
+#alembic upgrade head
+
+#Extensão SqLite Viewer#
+
