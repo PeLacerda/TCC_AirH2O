@@ -1191,7 +1191,7 @@
                         </div>
                     </div>
                     <p style="text-align: center; color: var(--text-secondary); margin-top: 10px;">
-                        Capacidade: <strong style="color: var(--primary);">10 L / 50 L</strong>
+                        Capacidade: <strong id="waterCapacity" style="color: var(--primary);">-- L / -- L</strong>
                     </p>
                 </div>
 
@@ -1663,21 +1663,29 @@
             }, 4000);
         }
 
-        // SIMULAÇÃO DE DADOS EM TEMPO REAL
-        function atualizarDadosPainel() {
-            // Valores fixos
-            const waterLevel = 10;
-            const waterToday = 10;
-            const soilMoisture = 10;
-            const temperature = 10;
+        // IP
+        const API_URL = 'http://192.168.1.100:8000';
 
-            document.getElementById('waterLevel').textContent = waterLevel;
-            document.getElementById('waterFill').style.height = waterLevel + '%';
-            document.getElementById('waterPercentage').textContent = waterLevel + '%';
-            document.getElementById('waterToday').textContent = waterToday;
-            document.getElementById('soilMoisture').textContent = soilMoisture;
-            document.getElementById('temperature').textContent = temperature;
-        }
+        // SIMULAÇÃO DE DADOS EM TEMPO REAL
+    async function atualizarDadosPainel() {
+        // Nível vem da API; os demais continuam fixos
+        let waterLevel = 10;
+        try {
+            const resp = await fetch('http://192.168.1.100:8000/api/medicoes/ultima');
+            if (resp.ok) waterLevel = (await resp.json()).nivel_percentual;
+        } catch (e) {}
+
+        const waterToday = 10;
+        const soilMoisture = 10;
+        const temperature = 10;
+
+        document.getElementById('waterLevel').textContent = waterLevel;
+        document.getElementById('waterFill').style.height = waterLevel + '%';
+        document.getElementById('waterPercentage').textContent = waterLevel + '%';
+        document.getElementById('waterToday').textContent = waterToday;
+        document.getElementById('soilMoisture').textContent = soilMoisture;
+        document.getElementById('temperature').textContent = temperature;
+    }
 
         // Atualizar dados a cada 5 segundos (quando autenticado)
         setInterval(atualizarDadosPainel, 5000);
