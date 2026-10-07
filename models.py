@@ -34,3 +34,20 @@ class Usuario(Base):
         self.senha = senha       
         self.endereco=endereco
         self.admin=admin
+        
+# medicoes enviadas pelo ESP32 (nivel de agua do reservatorio)
+class Medicao(Base):
+    __tablename__ = "medicoes"
+
+    id = Column("id", Integer, primary_key=True, autoincrement=True)
+    dispositivo_id = Column("DispositivoId", String, nullable=False, index=True)
+    dispositivo_nome = Column("DispositivoNome", String)
+    nivel_percentual = Column("NivelPercentual", Integer, nullable=False)
+    nivel_litros = Column("NivelLitros", Float)
+    capacidade_litros = Column("CapacidadeLitros", Float)
+    sensor25 = Column("Sensor25", Boolean, default=False)
+    sensor50 = Column("Sensor50", Boolean, default=False)
+    sensor75 = Column("Sensor75", Boolean, default=False)
+    sensor100 = Column("Sensor100", Boolean, default=False)
+    # horario do servidor (o ESP so envia uptime, nao hora real)
+    criado_em = Column("CriadoEm", DateTime, default=datetime.utcnow, index=True)
