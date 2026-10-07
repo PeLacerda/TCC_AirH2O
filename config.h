@@ -11,8 +11,9 @@
 #define DISPOSITIVO_ID "esp32-reservatorio-01"
 #define DISPOSITIVO_NOME "Reservatório Principal - ETEC"
 
-// Endpoint da API
-#define API_BASE_URL "http://192.168.1.100:3000"
+// Endpoint da API (IP do PC que roda o uvicorn, na mesma rede Wi-Fi do ESP)
+// Back-end: python -m uvicorn main:app --host 0.0.0.0 --port 8000
+#define API_BASE_URL "http://192.168.1.100:8000"
 #define API_MEDICOES_PATH "/api/medicoes"
 
 #define INTERVALO_LEITURA_MS 30000   // 30 segundos
@@ -27,5 +28,6 @@ static const uint8_t PIN_SENSOR_NIVEL_75 = 6;  // 75%
 static const uint8_t PIN_SENSOR_NIVEL_100 = 7; // 100%
 
 #define HTTP_MAX_TENTATIVAS 3
+#define HTTP_TIMEOUT_MS 5000
 
 #endif

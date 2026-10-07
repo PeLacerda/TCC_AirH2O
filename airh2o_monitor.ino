@@ -153,6 +153,7 @@ bool enviarMedicaoAPI(const LeituraNivel &leitura) {
   for (uint8_t i = 0; i < HTTP_MAX_TENTATIVAS; i++) {
     HTTPClient http;
     http.begin(url);
+    http.setTimeout(HTTP_TIMEOUT_MS);
     http.addHeader("Content-Type", "application/json");
 
     Serial.printf("[API] POST %s\n", url.c_str());
